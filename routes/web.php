@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{HomeController, UserController};
+use App\Http\Controllers\Admin\{HomeController, UserController, ProductsController};
 use Illuminate\Support\Facades\{Route, Auth, Artisan};
 
 /*
@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified', 'active' ,'admin', 'revalidate'])
     // route for admin dashboard
 	Route::get('/home', [HomeController::class, 'index'])->name('admin-dashboard');
 	Route::resource('admin-user', UserController::class)->except(['show']);
+	Route::resource('admin-products', ProductsController::class)->except(['show']);
 });
 
 Auth::routes(['verify' => true, 'register' => false]);

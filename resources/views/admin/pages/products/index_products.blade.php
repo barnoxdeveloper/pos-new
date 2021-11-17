@@ -1,7 +1,7 @@
 @extends('layouts.admin_layout')
-@section('user-open', 'menu-open')
-@section('user-a', 'active')
-@section('user-index', 'active')
+@section('products-open', 'menu-open')
+@section('products-a', 'active')
+@section('products-index', 'active')
 @section('title', $title)
 @section('admin_content')
 
@@ -32,7 +32,7 @@
 							<div class="col-6 text-right">
 								<a href="javascript:void(0)" class="btn btn-sm btn-success" id="tombol-tambah">
 									<i class="fa fa-plus"></i> 
-									New User
+									New Products
 								</a>
 							</div>
 						</div>
@@ -43,10 +43,11 @@
 								<thead>
 									<tr class="text-center">
 										<th>#</th>
+										<th>ID</th>
 										<th>Name</th>
-										<th>Username</th>
-										<th>Email</th>
-										<th>Roles</th>
+										<th>Price</th>
+										<th>Descriptions</th>
+										<th>Types</th>
 										<th>Status</th>
 										<th>Actions</th>
 									</tr>
@@ -70,42 +71,45 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form action="" id="form-tambah-edit">
+					<form method="POST" enctype="multipart/form-data" id="form-tambah-edit">
 						@csrf
-						<input type="hidden" readonly name="type" id="type" value="">
+						<input type="hidden" readonly name="type" id="type">
 						<input type="hidden" readonly name="id" id="id">
+
+						<div class="form-group">
+							<label for="product_id">Product ID*</label>
+							<input type="text" name="product_id" id="product_id" required="" class="form-control" autofocus placeholder="Product ID" value="{{ old('product_id') }}">
+							<span class="text-danger error-text product_id_error"></span>
+						</div>
+
 						<div class="form-group">
 							<label for="name">Name*</label>
 							<input type="text" name="name" id="name" required="" class="form-control" autofocus placeholder="Name" value="{{ old('name') }}">
 							<span class="text-danger error-text name_error"></span>
 						</div>
+
 						<div class="form-group">
-							<label for="username">Username*</label>
-							<input type="text" name="username" id="username" minlength="6" required="" class="form-control" placeholder="Username" value="{{ old('username') }}">
-							<span class="text-danger error-text username_error"></span>
+							<label for="price">Price*</label>
+							<input type="number" name="price" id="price" required="" class="form-control" autofocus placeholder="Price" value="{{ old('price') }}">
+							<span class="text-danger error-text name_error"></span>
 						</div>
+
 						<div class="form-group">
-							<label for="email">Email*</label>
-							<input type="email" name="email" id="email" required="" class="form-control" placeholder="Email" value="{{ old('email') }}">
-							<span class="text-danger error-text email_error"></span>
+							<label for="descriptions">Descriptions</label>
+							<textarea name="descriptions" id="descriptions" class="form-control" autofocus placeholder="Descriptions" value="{{ old('descriptions') }}" rows="3"></textarea>
+							<span class="text-danger error-text descriptions_error"></span>
 						</div>
+						
 						<div class="form-group">
-							<label for="password">Password (min : 6 Character)*</label>
-							<input type="password" name="password" id="password" class="form-control" placeholder="Password" value="{{ old('password') }}">
-							<span class="text-danger error-text password_error"></span>
-							<div style="display: none;" id="checkbox_password">
-								<input type="checkbox" value="ACTIVE" id="change_password"> Change Password
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="roles">Roles*</label>
-							<select name="roles" class="form-control" required="" id="roles">
-								<option value="0" selected disabled>Select Roles</option>
-								<option value="ADMINISTRATOR">ADMINISTRATOR</option>
-								<option value="KASIR">KASIR</option>
+							<label for="types">Types*</label>
+							<select name="types" class="form-control" required="" id="types">
+								<option value="0" disabled selected>Pilih Type</option>
+								<option value="MAKANAN">MAKANAN</option>
+								<option value="MINUMAN">MINUMAN</option>
 							</select>
-							<span class="text-danger error-text roles_error"></span>
+							<span class="text-danger error-text types_error"></span>
 						</div>
+
 						<div class="form-group" style="display: none;" id="form_status">
 							<label for="status">Status*</label>
 							<select name="status" class="form-control" required="" id="status">
@@ -114,6 +118,7 @@
 							</select>
 							<span class="text-danger error-text status_error"></span>
 						</div>
+
 						<div class="form-group text-center">
 							<button type="submit" class="btn btn-primary btn-block" id="tombol-simpan" value="create">
 								<i class="fa fa-paper-plane" id="tombol-simpan-icon"></i>
@@ -163,15 +168,16 @@
 				serverSide : true,
 				ordering: true,
 				ajax : {
-					url : "{{ route('admin-user.index') }}",
+					url : "{{ route('admin-products.index') }}",
 					type : 'GET',
 				},
 				columns: [
 					{ data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center" },
+					{ data: 'product_id', name: 'product_id', className: "text-center" },
 					{ data: 'name', name: 'name', className: "text-center" },
-					{ data: 'username', name: 'username', className: "text-center" },
-					{ data: 'email', name: 'email', className: "text-center" },
-					{ data: 'roles', name: 'roles', className: "text-center" },
+					{ data: 'price', name: 'price', className: "text-center" },
+					{ data: 'descriptions', name: 'descriptions', className: "text-center" },
+					{ data: 'types', name: 'types', className: "text-center" },
 					{ data: 'status', name: 'status', className: "text-center" },
 					{ data: 'action', name: 'action', className: "text-center" },
 				],
@@ -194,92 +200,91 @@
 		$('#tombol-tambah').click(function () {
 			$('#button-simpan').val("create-post");
 			$('#id').val('');
-			$('#form-tambah-edit').trigger("reset");
-			$('#modal-title').html("Create New User (Tanda * Wajib Diisi!)");
-			$('#tambah-edit-modal').modal('show');
-			$('#checkbox_password').attr("style", "display: none;");
-			$('#password').removeAttr("disabled", "disabled");
-			$('#password').attr("minlength", "6");
-			$('#password').addClass("required");
 			$('#type').val('tambah');
+			$('#form-tambah-edit').trigger("reset");
+			$('#modal-title').html("Create New Car (Tanda * Wajib Diisi!)");
+			$('#tambah-edit-modal').modal('show');
 			$('#label-simpan').html('Save');
 		});
 
 		if ($("#form-tambah-edit").length > 0) {
-			$("#form-tambah-edit").validate({
-				submitHandler: function (form) {
-					let actionType = $('#tombol-simpan').val();
-					Swal.fire({
-						title: 'Are you sure?',
-						icon: 'info',
-						showCancelButton: true,
-						confirmButtonColor: '#3085d6',
-						cancelButtonColor: '#d33',
-						confirmButtonText: 'Yes, Save it!'
-						}).then((result) => {
-							if (result.isConfirmed) {
-								$('#label-simpan').html('Saving. . .');
+            $("#form-tambah-edit").validate({
+                submitHandler: function (form) {
+                    let actionType = $('#tombol-simpan').val();
+                    let formData = new FormData(document.getElementById('form-tambah-edit'));
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to save data!",
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Save it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#label-simpan').html('Saving. . .');
                                 $('#tombol-simpan-icon').removeClass('fa fa-paper-plane');
                                 $('#tombol-simpan-icon').addClass('fa fa-spinner');
-								$.ajax({
-								data: $('#form-tambah-edit').serialize(),
-								url: "{{ route('admin-user.store') }}",
-								type: "POST",
-								dataType: 'json',
-								beforeSend:function(){
-									$(document).find('span.error-text').text('');
-								},
-								success: function (data) {
-									if (data.status == 0) {
-										$.each(data.error, function(prefix, val) {
-											$('span.'+prefix+'_error').text(val[0]);
-										});
-									} else {
-										$('#tombol-simpan').html('Sending..');
-										$('#form-tambah-edit').trigger("reset");
-										$('#tambah-edit-modal').modal('hide');
-										$('#tombol-simpan').html('Simpan');
-										$('#example1').DataTable().ajax.reload();
-										Swal.fire(
-											'Saved!',
-											'Your Data has been Saved.',
-											'success'
-										);
-									}
-								},
-								error: function (data) {
-									console.log('Error:', data);
-									$('#label-simpan').html('Save');
-								}
-							});
-						}
-					});
-				}
-			});
-		}
+                                $.ajax({
+                                type: "POST",
+                                url: "{{ route('admin-products.store') }}",
+                                data: formData,
+                                dataType: 'json',
+                                processData: false,
+                                contentType: false,
+                                beforeSend:function(){
+                                    $(document).find('span.error-text').text('');
+                                },
+                                success: function (data) {
+                                    if (data.status == 0) {
+                                        $.each(data.error, function(prefix, val) {
+                                            $('span.'+prefix+'_error').text(val[0]);
+                                        });
+                                    } else {
+                                        // $('#tombol-simpan').html('Saving..');
+                                        $('#tombol-simpan-icon').addClass('fa fa-paper-plane');
+                                        $('#form-tambah-edit').trigger("reset");
+                                        $('#tambah-edit-modal').modal('hide');
+                                        $('#example1').DataTable().ajax.reload();
+                                        
+                                        Swal.fire(
+                                            'Saved!',
+                                            'Your Data has been Saved!',
+                                            'success'
+                                        );
+                                    }
+                                },
+                                error: function (data) {
+                                    console.log('Error:', data);
+                                    $('#label-simpan').html('Save');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
 
 		// method edit data
 		$('body').on('click', '.edit-post', function () {
 			let data_id = $(this).data('id');
-			$('#form_status').attr("style", "display: auto;");
-			$('#checkbox_password').attr("style", "display: auto;");
-			$('#password').attr("disabled", "disabled");
 			$('#type').val('edit');
-			$.get('admin-user/' + data_id + '/edit', function (data) {
-				$('#modal-title').html("Edit User (Tanda * Wajib Diisi!)");
+			$('#form_status').attr("style", "display: auto;");
+			$.get('admin-products/' + data_id + '/edit', function (data) {
+				$('#modal-title').html("Edit Products (Tanda * Wajib Diisi!)");
 				$('#tombol-simpan').val("edit-post");
 				$('#tambah-edit-modal').modal('show');
 				$('#label-simpan').html('Save');
 				
-				// set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-				$('#btn').val("button_update");
+				//set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
 				$('#id').val(data.id);
+				$('#product_id').val(data.product_id);
 				$('#name').val(data.name);
-				$('#username').val(data.username);
-				$('#email').val(data.email);
-				$('#roles').val(data.roles);
+				$('#price').val(data.price);
+				$('#descriptions').val(data.descriptions);
+				$('#types').val(data.types);
 				$('#status').val(data.status);
-			})
+			});
 		});
 
 		// method delete
@@ -287,9 +292,10 @@
 			dataId = $(this).attr('id');
 			$('#konfirmasi-modal').modal('show');
 		});
+
 		$('#tombol-hapus').click(function () {
 			$.ajax({
-				url: "admin-user/" + dataId,
+				url: "admin-products/" + dataId,
 				type: 'delete',
 				beforeSend: function () {
 					$('#tombol-hapus').text('Deleting');
@@ -307,18 +313,6 @@
 					});
 				}
 			})
-		});
-
-		$('#change_password').click(function() {
-			if( $(this).is(':checked')) {
-				$('#password').attr('disabled', false);
-				$('#password').attr('required', true);
-				$('#password').attr("minlength", "6");
-			} else {
-				$('#password').attr('disabled', true);
-				$('#password').attr('required', false);
-				$('#password').removeAttr("minlength", "6");
-			}
 		});
 	</script>
 

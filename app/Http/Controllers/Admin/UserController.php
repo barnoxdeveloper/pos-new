@@ -22,15 +22,19 @@ class UserController extends Controller
         $i = 1;
         $title = 'Data User';
         $items = User::orderBy('name', 'ASC')
-                    ->whereNotIn('roles', ['ADMINISTRATOR'])
-                    ->get();
+                        ->get();
+        // ->whereNotIn('roles', ['ADMINISTRATOR'])
         if($request->ajax()){
             return datatables()->of($items)
                         ->addColumn('action', function($data){
-                            $button = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$data->id.'" data-original-title="Edit" id="tombol-edit" class="edit btn btn-warning btn-md edit-post"><i class="fa fa-edit"></i></a>';
-                            $button .= '&nbsp;&nbsp;';
-                            $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-md"><i class="fa fa-trash"></i></button>';     
-                            return $button;
+                            if ($data->roles == "ADMINISTRATOR") {
+                                return '-';
+                            } else {
+                                $button = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$data->id.'" data-original-title="Edit" id="tombol-edit" class="edit btn btn-warning btn-md edit-post"><i class="fa fa-edit"></i></a>';
+                                $button .= '&nbsp;&nbsp;';
+                                $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-md"><i class="fa fa-trash"></i></button>';     
+                                return $button;
+                            }
                         })
                         ->rawColumns(['action'])
                         ->addIndexColumn()
@@ -73,7 +77,7 @@ class UserController extends Controller
         }
         // return $user_check->email ==;
         if ($type == 'edit') {
-            $user_check = User::find($id);   
+            $user_check = User::find($id);
             $validator = Validator::make( $request->all(),[
                 'name' => 'required|max:50',
                 'username' => 'required|min:6|max:50|unique:users,username,'.$user_check->username.',username',
@@ -130,7 +134,6 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::where('id', $id)->firstOrFail();
-        
         return response()->json($user);
     }
 

@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ url('backend/plugins/daterangepicker/daterangepicker.css')}}">
         {{-- AOS css --}}
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-        <link rel="icon" type="image/png" href="{{ url('backend/login/TM.png') }}"/>
+        <link rel="icon" type="image/png" href="{{ url('backend/login/point-of-sale.png') }}"/>
         <style>
             html {
                 scroll-behavior: smooth;

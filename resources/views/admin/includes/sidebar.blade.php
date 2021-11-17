@@ -1,8 +1,8 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
         <a href="{{ route('admin-dashboard') }}" class="brand-link">
-            <img src="{{ url('backend/login/TM.png') }}" alt="Tunas Mitra" class="brand-image elevation-3" style="opacity: .8">
-            <span class="brand-text font-weight-light ml-4">Tunas Mitra</span>
+            <img src="{{ url('backend/login/point-of-sale.png') }}" alt="Tunas Mitra" class="brand-image elevation-3" style="opacity: .8">
+            <span class="brand-text font-weight-light ml-4">Point Of Sale</span>
         </a>
         <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -38,6 +38,14 @@
                         <a href="{{ route('admin-user.index') }}" class="nav-link @yield('user-a')">
                             <i class="nav-icon fa fa-users"></i>
                             <p>User</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item"><hr></li>
+                    <li class="nav-item @yield('products-open')">
+                        <a href="{{ route('admin-products.index') }}" class="nav-link @yield('products-a')">
+                            <i class="nav-icon fa fa-product-hunt"></i>
+                            <p>Products</p>
                         </a>
                     </li>
                     
